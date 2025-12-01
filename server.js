@@ -13,8 +13,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// In-memory storage for cards
+// In-memory storage for cards and short links
 const cards = new Map();
+const shortLinks = new Map();
 
 // Sample card data generator
 const generateSampleCard = (userName = "John Doe", cardNumber = null) => {
@@ -68,7 +69,11 @@ const generateSampleCard = (userName = "John Doe", cardNumber = null) => {
         expiresOn: "2025-12-12",
         redeemInfo: {
           barcodeType: "code128",
-          barcodeValue: cardNumber ? `${baseUrl}/refresh-card/${cardNumber}` : `${baseUrl}/refresh-card/default`,
+          barcodeValue: cardNumber ? (() => {
+            const shortId = Math.random().toString(36).substring(2, 8);
+            shortLinks.set(shortId, cardNumber);
+            return `${baseUrl}/s/${shortId}`;
+          })() : `${baseUrl}/s/default`,
           instructions: "Present barcode at checkout"
         }
       };
@@ -129,6 +134,21 @@ app.post('/track-analytics', (req, res) => {
   res.json({
     success: true,
     message: 'Analytics tracked successfully'
+  });
+});
+
+// Short link redirect - GET /s/:shortId
+app.get('/s/:shortId', (req, res) => {
+  const { shortId } = req.params;
+  const cardNumber = shortLinks.get(shortId);
+  
+  if (cardNumber) {
+    return res.redirect(`/refresh-card/${cardNumber}`);
+  }
+  
+  res.status(404).json({
+    success: false,
+    message: 'Short link not found'
   });
 });
 
