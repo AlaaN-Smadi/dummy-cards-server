@@ -122,6 +122,20 @@ app.get('/refresh-card/:cardNumber', (req, res) => {
   });
 });
 
+// Track analytics API - POST /track-analytics
+app.post('/track-analytics', (req, res) => {
+  console.log('Analytics tracked:', req.body);
+  
+  res.json({
+    success: true,
+    message: 'Analytics tracked successfully'
+  });
+});
+
+app.get('/', (req, res) => {
+  res.send('👋 server is working 👋')
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on ${baseUrl}`);
 });
