@@ -68,7 +68,7 @@ const generateSampleCard = (userName = "John Doe", cardNumber = null) => {
         expiresOn: "2025-12-12",
         redeemInfo: {
           barcodeType: "code128",
-          barcodeValue: cardNumber ? `baseUrl/refresh-card/${cardNumber}` : `baseUrl/refresh-card/default`,
+          barcodeValue: cardNumber ? `${baseUrl}/refresh-card/${cardNumber}` : `${baseUrl}/refresh-card/default`,
           instructions: "Present barcode at checkout"
         }
       };
